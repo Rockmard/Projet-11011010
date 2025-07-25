@@ -57,10 +57,10 @@ def main() :
                         elif (rank == "CHALLENGER") :
                             new_playersC.add(puuid)
             elif (response.status_code == 429) :
-                print("Two many requests, see you in 20 seconds\n")
+                print("Two many requests, see you in 20 seconds")
                 sleep(20)
             else :
-                print("An error has occured\n")
+                print(f"An error has occured ({response.status_code})")
                 return
             page += 1
 
