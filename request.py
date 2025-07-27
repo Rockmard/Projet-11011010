@@ -3,17 +3,17 @@ from constants import *
 from time import sleep
 import requests
 import datetime
-from typing import Callable
 
 class RiotWorker(QThread):
     finished = Signal(str)
 
-    def __init__(self, fn: Callable[[], str]):
+    def __init__(self, fn, *args):
         super().__init__()
         self.fn = fn
+        self.args = args
 
     def run(self):
-        result = self.fn()
+        result = self.fn(*self.args)
         self.finished.emit(result)
 
 def get_error_code_reason(code: int) -> str:
@@ -124,3 +124,17 @@ def get_players_in_league() -> str:
         for id in challenger_to_add:
             f.write(id + "\n")
     return("Player lists filled successfully")
+
+def get_player_by_puuid(puuid: str):
+    response = requests.get(PLAYER_BY_PUUID.format(puuid))
+    if (response.status_code == 200) :
+        data = response.json()
+        print(data)
+        return ("Player returned successfully")
+    elif (response.status_code == 429) :
+        print("Two many requests, see you in 20 seconds")
+        sleep(20)
+    else :
+        print(f"An error has occured ({response.status_code})")
+        print(get_error_code_reason(response.status_code))
+        return(str(response.status_code)+" : "+get_error_code_reason(response.status_code))
