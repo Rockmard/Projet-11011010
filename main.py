@@ -3,6 +3,33 @@ from time import sleep
 import requests
 import datetime
 
+def get_error_code_reason(code: int) :
+    match code:
+        case 400:
+            print("Bad request")
+        case 401:
+            print("Unauthorized")
+        case 403:
+            print("Forbidden")
+        case 404:
+            print("Data not found")
+        case 405:
+            print("Method not allowed")
+        case 415:
+            print("Unsupported media type")
+        case 429:
+            print("Rate limit exceeded")
+        case 500:
+            print("Internal server error")
+        case 502:
+            print("Bad gateway")
+        case 503:
+            print("Service unavailable")
+        case 504:
+            print("Gateway timeout")
+        case _:
+            print("No error found for this code")
+
 def init_file() :
     try:
         open("lists/master", "r")
@@ -61,6 +88,7 @@ def main() :
                 sleep(20)
             else :
                 print(f"An error has occured ({response.status_code})")
+                print(get_error_code_reason(response.status_code))
                 return
             page += 1
 
