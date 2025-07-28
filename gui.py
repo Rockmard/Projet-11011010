@@ -1,26 +1,27 @@
 import sys
+from typing import cast, List
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout,
     QLabel, QPushButton, QLineEdit
 )
-from PySide6.QtGui import QFont, QPainter, QPixmap
-from PySide6.QtCore import Qt, QPoint, QEvent
+from PySide6.QtGui import QFont, QPainter, QPixmap, QPaintEvent, QMouseEvent
+from PySide6.QtCore import Qt, QPoint, QEvent, QObject
 from request import RiotWorker, get_players_in_league, get_player_by_puuid, get_player_by_riotid
 from constants import MAIN_BACKGROUND_PATH
 
 class BackgroundWidget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.setMouseTracking(True)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
         self.mouse_pos = QPoint(self.width() // 2, self.height() // 2)
         self.background = QPixmap(MAIN_BACKGROUND_PATH)
 
-    def update_mouse_pos(self, pos):
+    def update_mouse_pos(self, pos: QPoint):
         self.mouse_pos = pos
         self.update()
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent):
         painter = QPainter(self)
 
         if self.mouse_pos.isNull():
@@ -96,8 +97,16 @@ class MainWindow(QWidget):
         self.background_widget.lower()
 
         # PUTTING MOUSE TRACKING ON EVERY WIDGETS
-        for widget in [self.api_key_field, self.api_key_button, self.label,
-                    self.get_lists_button, self.text_field, self.get_player_info_button]:
+        widgets: List[QWidget] = [
+            cast(QWidget, self.api_key_field),
+            cast(QWidget, self.api_key_button),
+            cast(QWidget, self.label),
+            cast(QWidget, self.get_lists_button),
+            cast(QWidget, self.text_field),
+            cast(QWidget, self.get_player_info_button)
+        ]
+
+        for widget in widgets:
             widget.setMouseTracking(True)
             widget.installEventFilter(self)
         
@@ -125,18 +134,24 @@ class MainWindow(QWidget):
         self.api_key_field.setStyleSheet("border : 1px solid grey; padding-top: 1px; padding-bottom: 1px; border-radius: 3px")
 
     # MOUSE TRACKING 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent):
         pos = event.position().toPoint() if hasattr(event, 'position') else event.pos()
         # Map the position relative to background widget:
         pos = self.background_widget.mapFrom(self, pos)
         self.background_widget.update_mouse_pos(pos)
         super().mouseMoveEvent(event)
 
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.MouseMove:
-            # Map position properly
-            pos = event.position().toPoint() if hasattr(event, 'position') else event.pos()
-            global_pos = obj.mapToGlobal(pos)
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
+        if event.type() == QEvent.Type.MouseMove and isinstance(obj, QWidget):
+            mouse_event = cast(QMouseEvent, event)  # Tell type checker this is a mouse event
+
+            if hasattr(mouse_event, 'position'):
+                pos: QPoint = mouse_event.position().toPoint()
+            else:
+                pos = mouse_event.pos()
+
+            widget = obj
+            global_pos = widget.mapToGlobal(pos)
             bg_pos = self.background_widget.mapFromGlobal(global_pos)
             self.background_widget.update_mouse_pos(bg_pos)
         return super().eventFilter(obj, event)
