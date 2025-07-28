@@ -1,13 +1,14 @@
 from PySide6.QtCore import QThread, Signal
 from constants import *
 from time import sleep
+from typing import Callable, Any
 import requests
 import datetime
 
 class RiotWorker(QThread):
     finished = Signal(str)
 
-    def __init__(self, fn, *args):
+    def __init__(self, fn: Callable[..., Any], *args: Any):
         super().__init__()
         self.fn = fn
         self.args = args
@@ -125,15 +126,12 @@ def get_players_in_league() -> str:
             f.write(id + "\n")
     return("Player lists filled successfully")
 
-def get_player_by_puuid(puuid: str):
+def get_player_by_puuid(puuid: str) -> str:
     response = requests.get(PLAYER_BY_PUUID.format(puuid))
     if (response.status_code == 200) :
         data = response.json()
         print(data)
         return ("Player returned successfully")
-    elif (response.status_code == 429) :
-        print("Two many requests, see you in 20 seconds")
-        sleep(20)
     else :
         print(f"An error has occured ({response.status_code})")
         print(get_error_code_reason(response.status_code))

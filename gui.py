@@ -53,9 +53,10 @@ class MainWindow(QWidget):
         self.label.setText("Calling API...")
         self.get_lists_button.setEnabled(False)
 
-        self.worker = RiotWorker(get_players_in_league)
-        self.worker.finished.connect(self.handle_result)
-        self.worker.start()
+        self.list_worker = RiotWorker(get_players_in_league)
+        self.list_worker.finished.connect(self.handle_result)
+        self.list_worker.finished.connect(self.list_worker.deleteLater)
+        self.list_worker.start()
 
     def get_player_info(self):
         puuid = self.text_field.text()
@@ -64,9 +65,10 @@ class MainWindow(QWidget):
         else :
             self.text_field.setStyleSheet("border : 1px solid black; padding-top: 2px; padding-bottom: 2px; border-radius: 2px")
             self.get_player_info_button.setEnabled(False)
-            self.worker = RiotWorker(get_player_by_puuid, puuid)
-            self.worker.finished.connect(self.handle_result2)
-            self.worker.start()
+            self.player_info_worker = RiotWorker(get_player_by_puuid, puuid)
+            self.player_info_worker.finished.connect(self.handle_result2)
+            self.player_info_worker.finished.connect(self.player_info_worker.deleteLater)
+            self.player_info_worker.start()
 
     def handle_result(self, message: str):
         self.label.setText(message)
