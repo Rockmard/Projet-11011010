@@ -70,7 +70,7 @@ def get_list() :
 
     return master, grandmaster, chall
 
-def get_players_in_league() -> str:
+def get_players_in_league(api_key: str) -> str:
     init_file()
     new_playersM: set[str] = set()
     new_playersGM: set[str] = set()
@@ -82,7 +82,7 @@ def get_players_in_league() -> str:
         page = 1
 
         while (True) :
-            response = requests.get(PLAYER_IN_LEAGUE_EXP.format(rank, str(page)))
+            response = requests.get(PLAYER_IN_LEAGUE_EXP.format(rank, str(page), api_key))
             if (response.status_code == 200) :
 
                 data = response.json()
@@ -126,8 +126,19 @@ def get_players_in_league() -> str:
             f.write(id + "\n")
     return("Player lists filled successfully")
 
-def get_player_by_puuid(puuid: str) -> str:
-    response = requests.get(PLAYER_BY_PUUID.format(puuid))
+def get_player_by_puuid(puuid: str, api_key: str) -> str:
+    response = requests.get(PLAYER_BY_PUUID.format(puuid, api_key))
+    if (response.status_code == 200) :
+        data = response.json()
+        print(data)
+        return ("Player returned successfully")
+    else :
+        print(f"An error has occured ({response.status_code})")
+        print(get_error_code_reason(response.status_code))
+        return(str(response.status_code)+" : "+get_error_code_reason(response.status_code))
+    
+def get_player_by_riotid(name: str, tag: str, api_key: str) -> str:
+    response = requests.get(PLAYER_BY_RIOTID.format(name, tag, api_key))
     if (response.status_code == 200) :
         data = response.json()
         print(data)
