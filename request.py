@@ -4,6 +4,7 @@ from time import sleep
 from typing import Callable, Any
 import requests
 import datetime
+import os
 
 class RiotWorker(QThread):
     finished = Signal(str)
@@ -45,27 +46,28 @@ def get_error_code_reason(code: int) -> str:
             return("No error found for this code")
 
 def init_file() :
+    os.makedirs("./lists", exist_ok=True)
     try:
-        open("lists/master", "r")
+        open("./lists/master", "r")
     except FileNotFoundError:
-        open("lists/master", "x")
+        open("./lists/master", "x")
 
     try:
-        open("lists/grandmaster", "r")
+        open("./lists/grandmaster", "r")
     except FileNotFoundError:
-        open("lists/grandmaster", "x")
+        open("./lists/grandmaster", "x")
 
     try:
-        open("lists/challenger", "r")
+        open("./lists/challenger", "r")
     except FileNotFoundError:
         open("lists/challenger", "x")
 
 def get_list() :
-    with open("lists/master", "r") as f:
+    with open("./lists/master", "r") as f:
         master = set(line.strip() for line in f)
-    with open("lists/grandmaster", "r") as f:
+    with open("./lists/grandmaster", "r") as f:
         grandmaster = set(line.strip() for line in f)
-    with open("lists/challenger", "r") as f:
+    with open("./lists/challenger", "r") as f:
         chall = set(line.strip() for line in f)
 
     return master, grandmaster, chall
@@ -112,15 +114,15 @@ def get_players_in_league(api_key: str) -> str:
     grandmaster_to_add = [id for id in new_playersGM if id not in grandmaster]
     challenger_to_add = [id for id in new_playersC if id not in challenger]
 
-    with open("lists/master", "a") as f:
+    with open("./lists/master", "a") as f:
         f.write(date+"\n")
         for id in master_to_add:
             f.write(id + "\n")
-    with open("lists/grandmaster", "a") as f:
+    with open("./lists/grandmaster", "a") as f:
         f.write(date+"\n")
         for id in grandmaster_to_add:
             f.write(id + "\n")
-    with open("lists/challenger", "a") as f:
+    with open("./lists/challenger", "a") as f:
         f.write(date+"\n")
         for id in challenger_to_add:
             f.write(id + "\n")
