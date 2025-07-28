@@ -66,6 +66,7 @@ class MainWindow(QWidget):
     def validate_api_key(self):
         self.api_key = self.api_key_field.text()
         self.api_key_field.setText("")
+        self.api_key_field.setPlaceholderText("Your key has been registered !")
         self.api_key_field.setStyleSheet("border : 1px solid grey; padding-top: 1px; padding-bottom: 1px; border-radius: 3px")
 
     # REQUESTS
