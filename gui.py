@@ -118,11 +118,17 @@ class MainWindow(QWidget):
             }
 
             QPushButton {
-                padding: 15px;
-            }        
-                               
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                background-color: transparent;
+                color: white;
+                font-family: 'YourFont';
+                padding: 8px 16px;
+            }
+
             QPushButton:hover {
                 background-color: rgba(255, 255, 255, 0.10);
+                border-color: rgba(255, 255, 255, 0.4);
             }
         """)
 
