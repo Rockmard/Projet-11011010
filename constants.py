@@ -6,4 +6,4 @@ PLAYER_BY_PUUID = "https://europe.api.riotgames.com/riot/account/v1/accounts/by-
 PLAYER_BY_RIOTID = "https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{}/{}?api_key={}"
 
 # FILES PATH
-MAIN_BACKGROUND_PATH = "resources/main_background.png"
+MAIN_BACKGROUND_PATH = "resources/main_background4.png"
